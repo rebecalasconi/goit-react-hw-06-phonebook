@@ -1,20 +1,23 @@
 // src/redux/store.js
-import { configureStore } from '@reduxjs/toolkit';
+import { createStore, applyMiddleware } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import contactsReducer from './contactsSlice';
+import storage from 'redux-persist/lib/storage';  // Folosește localStorage pentru persistare
+import rootReducer from './reducers/rootReducer';
+import { thunk } from 'redux-thunk';
 
+// Configurarea redux-persist
 const persistConfig = {
-  key: 'contacts',
+  key: 'root',
   storage,
-  whitelist: ['contacts'] // Salvăm doar contactele, nu și filtrul
 };
 
-const persistedReducer = persistReducer(persistConfig, contactsReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const store = configureStore({
-  reducer: persistedReducer,
-});
+// Crearea store-ului
+const store = createStore(
+  persistedReducer,
+  applyMiddleware(thunk)  // Adaugă middleware pentru thunks
+);
 
 const persistor = persistStore(store);
 

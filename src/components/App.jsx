@@ -2,15 +2,16 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { nanoid } from "nanoid";
-import ContactForm from "./components/ContactForm/ContactForm";
-import ContactList from "./components/ContactList/ContactList";
-import Filter from "./components/Filter/Filter";
+import ContactForm from "./ContactForm";
+import ContactList from "./ContactList";
+import Filter from "./Filter";
 import styles from './App.module.css';
-import { addContact, deleteContact, updateFilter } from "./redux/contactsSlice";
+import { addContact, deleteContact, setFilter } from '../redux/reducers/contactsReducer'
 
 const App = () => {
-  const contacts = useSelector((state) => state.contacts);
-  const filter = useSelector((state) => state.filter);
+  // Modificat: Adăugat fallbackuri pentru a preveni erori
+  const contacts = useSelector((state) => state.contacts?.contacts || []);
+  const filter = useSelector((state) => state.contacts?.filter || "");
   const dispatch = useDispatch();
 
   const handleAddContact = (name, number) => {
@@ -22,12 +23,12 @@ const App = () => {
     dispatch(deleteContact(id));
   };
 
-  const handleFilterChange = (filter) => {
-    dispatch(updateFilter(filter));
+  const handleFilterChange = (event) => {
+    dispatch(setFilter(event.target.value));
   };
 
   const getFilteredContacts = () => {
-    return contacts.filter(contact => 
+    return contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
